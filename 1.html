@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!-- 引入 ECharts 文件 -->
+        <script src="./echarts.js" type="text/javascript" charset="utf-8"></script>
+        <script src="./jquery-3.3.1.js"></script>
+        <style>
+            #epMenu li{
+                list-style: none;
+            }
+        </style>
+	<body>
+		<!-- 为 ECharts 准备一个具备大小（宽高）的 容器 -->
+        <div id="chart1" style="width: 80%;height: 400px;top: 50px;left: 10%;border: 3px solid #000;"></div>
+        <div id="epMenu"  style="display: none;width: 150px;height: 40px;position: absolute;">  
+            <ul><!--右键弹出菜单-->         
+                <li id="menu_blood" onClick="alert('分析一');" onMouseOver="this.style.background = '#999999';" onMouseOut="this.style.background = '#CCCCCC';">  
+                        分析一
+                </li>  
+                <li id="menu_influence" onClick="alert('分析二');" onMouseOver="this.style.background = '#999999';" onMouseOut="this.style.background = '#CCCCCC';">  
+                        分析二
+                </li>  
+            </ul>  
+        </div> 
+	</body>
+</html>
+<script type="text/javascript">
+
+	// 基于准备好的容器(这里的容器是id为chart1的div)，初始化echarts实例
+    var chart1 = echarts.init(document.getElementById("chart1"));
+    chart1.showLoading();//动画开启
+	
+	var dataAxis = ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
+    var data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
+    var yMax = 500;
+    var dataShadow = [];
+
+    for (var i = 0; i < data.length; i++) {
+        dataShadow.push(yMax);
+    }
+    var option = {
+        title: {
+            text: '示例：左键跳转  右键弹出菜单',
+            subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
+        },
+        xAxis: {
+            data: dataAxis,
+            axisLabel: {
+                inside: true,
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            axisTick: {
+                show: false
+            },
+            axisLine: {
+                show: false
+            },
+            z: 10
+        },
+        yAxis: {
+            axisLine: {
+                show: false
+            },
+            axisTick: {
+                show: false
+            },
+            axisLabel: {
+                textStyle: {
+                    color: '#999'
+                }
+            }
+        },
+        dataZoom: [
+            {
+                type: 'inside'
+            }
+        ],
+        series: [
+            { 
+                type: 'bar',
+                itemStyle: {
+                    normal: {color: 'rgba(0,0,0,0.05)'}
+                },
+                barGap:'-100%',
+                barCategoryGap:'40%',
+                data: dataShadow,
+                animation: false
+            },
+            {
+                type: 'bar',
+                itemStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(
+                            0, 0, 0, 1,
+                            [
+                                {offset: 0, color: '#83bff6'},
+                                {offset: 0.5, color: '#188df0'},
+                                {offset: 1, color: '#188df0'}
+                            ]
+                        )
+                    },
+                    emphasis: {
+                        color: new echarts.graphic.LinearGradient(
+                            0, 0, 0, 1,
+                            [
+                                {offset: 0, color: '#2378f7'},
+                                {offset: 0.7, color: '#2378f7'},
+                                {offset: 1, color: '#83bff6'}
+                            ]
+                        )
+                    }
+                },
+                data: data
+            }
+        ]
+    };
+        var zoomSize = 6;
+
+         //去除默认的鼠标事件
+        document.oncontextmenu = function () { return false; }; 
+        //鼠标右击事件弹出菜单
+        chart1.on('contextmenu', function (params) {
+            var pageX = params.event.offsetX;  
+            var pageY = params.event.offsetY; 
+            // console.log(params);
+            var epMenu=document.getElementById('epMenu');
+            // console.log( pageX + 'px');  
+            // console.log( pageY + 'px');
+            epMenu.style.left = pageX + 'px';  
+            epMenu.style.top = pageY + 'px'; 
+            epMenu.style.display = "block"; 
+            $("#epMenu ul").mouseleave(function () {
+                $("#epMenu").hide();
+            
+            });
+        });
+
+        // 鼠标左键跳转
+        chart1.on('click', function (params) {
+            window.open('https://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+            // console.log(params);
+        });
+        chart1.setOption(option)
+        chart1.hideLoading();//动画结束
+
+</script>
